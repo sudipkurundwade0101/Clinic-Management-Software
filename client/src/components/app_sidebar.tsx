@@ -102,7 +102,12 @@ export const AppSidebar = ({ children }: { children?: React.ReactNode }) => {
                             <SidebarMenu>
                                 {navItems.map((item) => (
                                     <SidebarMenuItem key={item.path}>
-                                        <SidebarMenuButton asChild tooltip={item.title} isActive={isActive(item.path)}>
+                                        <SidebarMenuButton 
+                                            asChild 
+                                            tooltip={item.title} 
+                                            isActive={isActive(item.path)}
+                                            className={isActive(item.path) ? "!bg-primary/15 !text-primary !font-semibold" : ""}
+                                        >
                                             <Link to={item.path}>
                                                 {item.icon}
                                                 <span>{item.title}</span>

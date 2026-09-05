@@ -91,18 +91,25 @@ export function PatientProfile({
         </div>
       </div>
 
-      {/* Gradient cover banner */}
-      <div
-        className="relative h-32 sm:h-44 bg-gradient-to-r from-primary/80 via-primary to-primary/60 overflow-hidden"
-      >
-        <div
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px)",
-            backgroundSize: "30px 30px",
-          }}
+      {/* Cover banner collage */}
+      <div className="relative h-32 sm:h-44 overflow-hidden bg-primary/20 grid grid-cols-2 sm:grid-cols-4 gap-1">
+        <img 
+          src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=1000" 
+          alt="Hospital Hallway" 
+          className="w-full h-full object-cover opacity-60 mix-blend-overlay col-span-2 sm:col-span-2"
         />
+        <img 
+          src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=600" 
+          alt="Laboratory" 
+          className="w-full h-full object-cover opacity-50 mix-blend-overlay hidden sm:block"
+        />
+        <img 
+          src="https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?auto=format&fit=crop&q=80&w=600" 
+          alt="Medical Equipment" 
+          className="w-full h-full object-cover opacity-60 mix-blend-overlay hidden sm:block"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-primary/10 mix-blend-color pointer-events-none" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-6">
@@ -259,17 +266,17 @@ export function PatientProfile({
             <Tabs defaultValue="overview">
               <div className="sticky top-14 z-20  pb-1">
                 <TabsList className="w-full justify-start bg-background border border-border rounded-xl p-1 h-12 shadow-sm overflow-x-auto">
-                  <TabsTrigger value="overview" className="rounded-lg text-xs sm:text-sm px-3 py-1.5">Overview</TabsTrigger>
-                  <TabsTrigger value="consultations" className="rounded-lg text-xs sm:text-sm px-3 py-1.5">
+                  <TabsTrigger value="overview" className="rounded-lg text-xs sm:text-sm px-3 py-1.5 data-active:!bg-primary data-active:!text-primary-foreground data-active:!shadow-md transition-all">Overview</TabsTrigger>
+                  <TabsTrigger value="consultations" className="group rounded-lg text-xs sm:text-sm px-3 py-1.5 data-active:!bg-primary data-active:!text-primary-foreground data-active:!shadow-md transition-all">
                     Consultations
-                    {consultations.length > 0 && <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 h-4">{consultations.length}</Badge>}
+                    {consultations.length > 0 && <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 h-4 border-none group-data-active:!bg-primary-foreground group-data-active:!text-primary">{consultations.length}</Badge>}
                   </TabsTrigger>
-                  <TabsTrigger value="prescriptions" className="rounded-lg text-xs sm:text-sm px-3 py-1.5">
+                  <TabsTrigger value="prescriptions" className="group rounded-lg text-xs sm:text-sm px-3 py-1.5 data-active:!bg-primary data-active:!text-primary-foreground data-active:!shadow-md transition-all">
                     Prescriptions
-                    {prescriptions.length > 0 && <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 h-4">{prescriptions.length}</Badge>}
+                    {prescriptions.length > 0 && <Badge variant="secondary" className="ml-1.5 text-[10px] px-1.5 h-4 border-none group-data-active:!bg-primary-foreground group-data-active:!text-primary">{prescriptions.length}</Badge>}
                   </TabsTrigger>
-                  <TabsTrigger value="documents" className="rounded-lg text-xs sm:text-sm px-3 py-1.5">Documents</TabsTrigger>
-                  <TabsTrigger value="billing" className="rounded-lg text-xs sm:text-sm px-3 py-1.5">Billing</TabsTrigger>
+                  <TabsTrigger value="documents" className="rounded-lg text-xs sm:text-sm px-3 py-1.5 data-active:!bg-primary data-active:!text-primary-foreground data-active:!shadow-md transition-all">Documents</TabsTrigger>
+                  <TabsTrigger value="billing" className="rounded-lg text-xs sm:text-sm px-3 py-1.5 data-active:!bg-primary data-active:!text-primary-foreground data-active:!shadow-md transition-all">Billing</TabsTrigger>
                 </TabsList>
               </div>
 

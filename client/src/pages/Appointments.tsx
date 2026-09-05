@@ -1,8 +1,8 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar, Plus, Filter, Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { Calendar, Plus, Filter } from 'lucide-react';
+import { PlaceholdersAndVanishInput } from '@/components/ui/placeholders-and-vanish-input';
 
 export const AppointmentsPage: React.FC = () => {
   return (
@@ -26,9 +26,17 @@ export const AppointmentsPage: React.FC = () => {
               <CardDescription>View upcoming, completed, and canceled visits.</CardDescription>
             </div>
             <div className="flex items-center gap-2">
-              <div className="relative w-full sm:w-64">
-                <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-                <Input placeholder="Search patient or doctor..." className="pl-9" />
+              <div className="w-full sm:w-80 z-10">
+                <PlaceholdersAndVanishInput
+                  placeholders={[
+                    "Search patient name...",
+                    "Search doctor...",
+                    "Find upcoming appointments...",
+                    "Search by phone number..."
+                  ]}
+                  onChange={(e) => console.log(e.target.value)}
+                  onSubmit={(e) => { e.preventDefault(); console.log("submitted"); }}
+                />
               </div>
               <Button variant="outline" size="icon">
                 <Filter className="size-4" />

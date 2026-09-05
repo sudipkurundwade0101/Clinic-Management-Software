@@ -1,10 +1,28 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Plus, Search, Eye, Trash2, ChevronRight } from "lucide-react";
+import { Plus, Search, Eye, Trash2, ChevronRight, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { GooeyInput } from "@/components/ui/gooey-input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -29,6 +47,8 @@ export default function Patients() {
 
   const [patients, setPatients] = useState<Patient[]>(initialPatients);
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
   const [editingPatient, setEditingPatient] = useState<Patient | "add" | null>(null);
   const [deletePatientTarget, setDeletePatientTarget] = useState<Patient | null>(null);
   const [notification, setNotification] = useState("");
@@ -117,6 +137,13 @@ export default function Patients() {
       (p) => p.name.toLowerCase().includes(s) || p.phone.includes(s) || p.id.toLowerCase().includes(s)
     );
   }, [patients, search]);
+
+  const totalPages = Math.ceil(filteredPatients.length / itemsPerPage);
+  
+  const paginatedPatients = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredPatients.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredPatients, currentPage, itemsPerPage]);
 
   // Render Patient Profile View
   if (patientId && activePatient) {
@@ -232,60 +259,132 @@ export default function Patients() {
             <CardTitle>Patient Directory</CardTitle>
             <CardDescription>{patients.length} registered patients</CardDescription>
           </div>
-          <div className="relative w-full sm:max-w-md">
-            <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
-            <Input className="pl-9" placeholder="Search by name, phone, or patient ID..." value={search} onChange={(e) => setSearch(e.target.value)} />
+          <div className="w-full sm:max-w-md z-10">
+            <GooeyInput
+              placeholder="Search by name, phone, or ID..."
+              value={search}
+              onValueChange={(v) => { setSearch(v); setCurrentPage(1); }}
+            />
           </div>
         </CardHeader>
         <CardContent>
           {filteredPatients.length ? (
             <>
               <div className="hidden overflow-hidden rounded-lg border md:block">
-                <table className="w-full text-sm">
-                  <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
-                    <tr>
-                      {["Patient ID", "Name", "Age", "Gender", "Phone", "Last Visit", "Status", ""].map((h) => (
-                        <th key={h} className="px-3 py-3">{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredPatients.map((p) => (
-                      <tr key={p.id} className="border-t hover:bg-muted/30 cursor-pointer" onClick={() => navigate(`/patients/${p.id}`)}>
-                        <td className="px-3 py-3 font-mono text-xs">{p.id}</td>
-                        <td className="px-3 py-3 font-medium">{p.name}</td>
-                        <td className="px-3 py-3">{p.age}</td>
-                        <td className="px-3 py-3">{p.gender}</td>
-                        <td className="px-3 py-3">{p.phone}</td>
-                        <td className="px-3 py-3">{fmtDate(p.lastVisit)}</td>
-                        <td className="px-3 py-3"><Badge variant="secondary">{p.status}</Badge></td>
-                        <td className="px-3 py-3">
-                          <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                <Table>
+                  <TableHeader className="bg-muted/50">
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Patient ID</TableHead>
+                      <TableHead>Age</TableHead>
+                      <TableHead>Gender</TableHead>
+                      <TableHead>Phone</TableHead>
+                      <TableHead>Last Visit</TableHead>
+                      <TableHead className="text-right"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedPatients.map((p) => (
+                      <TableRow key={p.id} className="cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => navigate(`/patients/${p.id}`)}>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <Avatar className="size-8 border">
+                              <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+                                {p.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <span className="font-medium">{p.name}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-mono text-xs font-medium">{p.id}</TableCell>
+                        <TableCell>{p.age}</TableCell>
+                        <TableCell>{p.gender}</TableCell>
+                        <TableCell>{p.phone}</TableCell>
+                        <TableCell>{fmtDate(p.lastVisit)}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
                             <Button variant="ghost" size="icon-sm" onClick={() => navigate(`/patients/${p.id}`)}><Eye className="size-4" /></Button>
                             <Button variant="ghost" size="icon-sm" className="text-destructive hover:text-destructive" onClick={() => setDeletePatientTarget(p)}><Trash2 className="size-4" /></Button>
                           </div>
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
+                  </TableBody>
+                </Table>
               </div>
               <div className="space-y-2 md:hidden">
-                {filteredPatients.map((p) => (
+                {paginatedPatients.map((p) => (
                   <button key={p.id} className="w-full rounded-lg border p-4 text-left hover:bg-muted/30 transition-colors" onClick={() => navigate(`/patients/${p.id}`)}>
                     <div className="flex items-center justify-between">
-                      <b>{p.name}</b><ChevronRight className="size-4 text-muted-foreground" />
+                      <div className="flex items-center gap-3">
+                        <Avatar className="size-8 border">
+                          <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+                            {p.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <b>{p.name}</b>
+                      </div>
+                      <ChevronRight className="size-4 text-muted-foreground" />
                     </div>
-                    <small className="block text-muted-foreground">{p.id} · {p.age} years · {p.phone}</small>
+                    <small className="block mt-2 text-muted-foreground">{p.id} · {p.age} years · {p.phone}</small>
                   </button>
                 ))}
               </div>
+              
+              {totalPages > 1 && (
+                <div className="pt-4 border-t mt-4 flex items-center justify-between">
+                  <p className="text-xs text-muted-foreground hidden sm:block">
+                    Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredPatients.length)} of {filteredPatients.length} patients
+                  </p>
+                  <Pagination className="justify-end">
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious 
+                          href="#" 
+                          onClick={(e) => { e.preventDefault(); setCurrentPage(p => Math.max(1, p - 1)) }}
+                          className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                        />
+                      </PaginationItem>
+                      {Array.from({ length: totalPages }).map((_, i) => (
+                        <PaginationItem key={i} className="hidden sm:inline-block">
+                          <PaginationLink 
+                            href="#" 
+                            isActive={currentPage === i + 1}
+                            onClick={(e) => { e.preventDefault(); setCurrentPage(i + 1) }}
+                            className={currentPage === i + 1 ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground border-primary" : ""}
+                          >
+                            {i + 1}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+                      <PaginationItem>
+                        <PaginationNext 
+                          href="#" 
+                          onClick={(e) => { e.preventDefault(); setCurrentPage(p => Math.min(totalPages, p + 1)) }}
+                          className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
             </>
           ) : (
-            <div className="py-16 text-center space-y-2">
-              <Search className="mx-auto mb-3 size-8 text-muted-foreground/40" />
-              <p className="font-medium">{search ? "No patients match your search" : "No patients yet"}</p>
-              {!search && <Button className="mt-2" onClick={() => setEditingPatient("add")}><Plus className="mr-2 size-4" /> Add First Patient</Button>}
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <div className="flex size-20 items-center justify-center rounded-full bg-muted/50 mb-4">
+                <User className="size-10 text-muted-foreground/50" />
+              </div>
+              <h3 className="text-lg font-semibold">{search ? "No patients found" : "No patients yet"}</h3>
+              <p className="text-sm text-muted-foreground max-w-sm mt-1 mb-6">
+                {search 
+                  ? "We couldn't find any patients matching your search. Try adjusting your filters." 
+                  : "Get started by adding a new patient to your clinic's directory."}
+              </p>
+              {!search && (
+                <Button onClick={() => setEditingPatient("add")} className="gap-2">
+                  <Plus className="size-4" /> Add First Patient
+                </Button>
+              )}
             </div>
           )}
         </CardContent>
