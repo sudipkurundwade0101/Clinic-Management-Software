@@ -5,6 +5,8 @@ import prescriptionRoutes from "./prescriptionRoutes.js";
 import billingRoutes from "./billingRoutes.js";
 import statsRoutes from "./statsRoutes.js";
 import calendarRoutes from "./googleCalendar.js";
+import authRoutes from "./authRoutes.js";
+import { verifyToken } from "../middleware/auth.js";
 
 const router = Router();
 
@@ -18,11 +20,12 @@ router.get("/health", (_req, res) => {
 });
 
 // Domain routes
-router.use("/patients", patientRoutes);
-router.use("/consultations", consultationRoutes);
-router.use("/prescriptions", prescriptionRoutes);
-router.use("/billing", billingRoutes);
-router.use("/stats", statsRoutes);
-router.use("/calendar", calendarRoutes);
+router.use("/auth", authRoutes);
+router.use("/patients", verifyToken, patientRoutes);
+router.use("/consultations", verifyToken, consultationRoutes);
+router.use("/prescriptions", verifyToken, prescriptionRoutes);
+router.use("/billing", verifyToken, billingRoutes);
+router.use("/stats", verifyToken, statsRoutes);
+router.use("/calendar", verifyToken, calendarRoutes);
 
 export default router;

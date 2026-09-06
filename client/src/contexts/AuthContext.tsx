@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export interface User {
+interface User {
   userId: string;
   role: string;
   name?: string;
@@ -8,7 +8,7 @@ export interface User {
   avatarUrl?: string;
 }
 
-export interface AuthContextType {
+interface AuthContextType {
   user: User | null;
   token: string | null;
   loading: boolean;

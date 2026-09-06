@@ -1,51 +1,30 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Stethoscope } from 'lucide-react';
-import { ROUTES } from '@/constants/routes';
+import React, { useEffect } from 'react';
+import { LoginForm } from '@/components/login-form';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 
 export const LoginPage: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Simulate login logic
-    if (login) {
-      login({ name: 'Dr. Sarah Smith', email: 'sarah.smith@medicare.com' });
+  useEffect(() => {
+    // If we're redirected back with a token, log the user in
+    const token = searchParams.get('token');
+    if (token) {
+      login(token);
+      navigate('/'); // Redirect to dashboard
+    } else if (user) {
+      // If already logged in, redirect to dashboard
+      navigate('/');
     }
-    navigate(ROUTES.DASHBOARD);
-  };
+  }, [searchParams, login, navigate, user]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/40 p-4">
-      <Card className="w-full max-w-md border border-border shadow-lg">
-        <CardHeader className="text-center space-y-2">
-          <div className="mx-auto size-12 rounded-xl bg-primary text-primary-foreground flex items-center justify-center">
-            <Stethoscope className="size-6" />
-          </div>
-          <CardTitle className="text-2xl font-bold">MediCare Portal</CardTitle>
-          <CardDescription>Sign in to access Clinic Management System</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-foreground">Email / Username</label>
-              <Input type="email" placeholder="doctor@medicare.com" defaultValue="sarah.smith@medicare.com" required />
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-foreground">Password</label>
-              <Input type="password" placeholder="••••••••" defaultValue="password123" required />
-            </div>
-            <Button type="submit" className="w-full">
-              Sign In to Portal
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10 bg-muted/40">
+      <div className="w-full max-w-sm">
+        <LoginForm />
+      </div>
     </div>
   );
 };

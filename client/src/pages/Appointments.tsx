@@ -9,6 +9,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar-custom.css';
 import { NewAppointmentModal } from '@/components/appointments/NewAppointmentModal';
 import { useSearchParams } from 'react-router-dom';
+import { api } from '@/lib/apiClient';
 
 const localizer = momentLocalizer(moment);
 
@@ -32,8 +33,7 @@ export const AppointmentsPage: React.FC = () => {
 
   const checkConnectionStatus = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/calendar/status');
-      const data = await res.json();
+      const data = await api.get('/calendar/status');
       setConnected(data.connected);
       if (data.connected) {
         fetchEvents();
@@ -46,9 +46,7 @@ export const AppointmentsPage: React.FC = () => {
   const fetchEvents = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/calendar/events');
-      if (!res.ok) throw new Error('Failed to fetch');
-      const data = await res.json();
+      const data = await api.get('/calendar/events');
       
       const formattedEvents = data.map((item: any) => ({
         title: item.summary,
@@ -70,19 +68,13 @@ export const AppointmentsPage: React.FC = () => {
   };
 
   const handleSaveAppointment = async (eventData: any) => {
-    const res = await fetch('http://localhost:5000/api/calendar/events', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(eventData),
-    });
-    if (!res.ok) {
-      const errTxt = await res.text();
-      console.error(errTxt);
-      throw new Error('Failed to create event');
+    try {
+      await api.post('/calendar/events', eventData);
+      await fetchEvents();
+    } catch (err: any) {
+      console.error(err.message);
+      throw new Error(err.message || 'Failed to create event');
     }
-    await fetchEvents();
   };
 
   return (
