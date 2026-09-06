@@ -4,6 +4,7 @@ import consultationRoutes from "./consultationRoutes.js";
 import prescriptionRoutes from "./prescriptionRoutes.js";
 import billingRoutes from "./billingRoutes.js";
 import statsRoutes from "./statsRoutes.js";
+import calendarRoutes from "./googleCalendar.js";
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use("/consultations", consultationRoutes);
 router.use("/prescriptions", prescriptionRoutes);
 router.use("/billing", billingRoutes);
 router.use("/stats", statsRoutes);
+router.use("/calendar", calendarRoutes);
 
 export default router;

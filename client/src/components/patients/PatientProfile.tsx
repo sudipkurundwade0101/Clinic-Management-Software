@@ -17,6 +17,19 @@ import type { Prescription } from "@/types/prescription";
 // Import data directly as it was used in Patients.tsx
 import { initialBills, initialDocuments } from "@/data/clinicalData";
 
+import banner1 from "@/assets/banners/banner_1.jpg";
+import banner2 from "@/assets/banners/banner_2.jpg";
+import banner3 from "@/assets/banners/banner_3.jpg";
+import banner4 from "@/assets/banners/banner_4.jpg";
+import banner5 from "@/assets/banners/banner_5.jpg";
+import banner6 from "@/assets/banners/banner_6.jpg";
+import banner7 from "@/assets/banners/banner_7.jpg";
+import banner8 from "@/assets/banners/banner_8.jpg";
+import banner9 from "@/assets/banners/banner_9.jpg";
+import banner10 from "@/assets/banners/banner_10.jpg";
+
+const BANNERS = [banner10, banner1, banner2, banner3, banner4, banner5, banner6, banner7, banner8, banner9];
+
 export function PatientProfile({
   patient,
   consultations,
@@ -63,6 +76,10 @@ export function PatientProfile({
   };
   const bgColor = bgColors[patient.bloodGroup ?? ""] ?? "bg-slate-500";
 
+  // Get a deterministic banner based on patient ID (e.g. "P001" -> 1)
+  const idNum = parseInt(patient.id.replace(/\D/g, "") || "0", 10);
+  const bannerSrc = BANNERS[idNum % 10];
+
   return (
     <div className="no-print min-h-screen bg-muted/30">
       {/* Sticky breadcrumb bar */}
@@ -91,25 +108,14 @@ export function PatientProfile({
         </div>
       </div>
 
-      {/* Cover banner collage */}
-      <div className="relative h-32 sm:h-44 overflow-hidden bg-primary/20 grid grid-cols-2 sm:grid-cols-4 gap-1">
+      {/* Cover banner */}
+      <div className="relative h-32 sm:h-44 overflow-hidden bg-primary/20">
         <img 
-          src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=1000" 
-          alt="Hospital Hallway" 
-          className="w-full h-full object-cover opacity-60 mix-blend-overlay col-span-2 sm:col-span-2"
+          src={bannerSrc} 
+          alt="Clinic Background" 
+          className="w-full h-full object-cover opacity-60 mix-blend-overlay"
         />
-        <img 
-          src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=600" 
-          alt="Laboratory" 
-          className="w-full h-full object-cover opacity-50 mix-blend-overlay hidden sm:block"
-        />
-        <img 
-          src="https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?auto=format&fit=crop&q=80&w=600" 
-          alt="Medical Equipment" 
-          className="w-full h-full object-cover opacity-60 mix-blend-overlay hidden sm:block"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent pointer-events-none" />
-        <div className="absolute inset-0 bg-primary/10 mix-blend-color pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 -mt-6">
