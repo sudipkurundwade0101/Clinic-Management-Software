@@ -15,7 +15,6 @@ const oauth2Client = new google.auth.OAuth2(
 
 // Scopes for Google Calendar
 const SCOPES = [
-  "https://www.googleapis.com/auth/calendar",
   "https://www.googleapis.com/auth/calendar.events",
 ];
 
@@ -107,11 +106,9 @@ router.post("/events", async (req, res) => {
       description,
       start: {
         dateTime: startTime,
-        timeZone: "Asia/Kolkata", // Adjust as necessary
       },
       end: {
         dateTime: endTime,
-        timeZone: "Asia/Kolkata",
       },
     };
 
